@@ -282,8 +282,8 @@ const RANDOM_DISTANCES = [100, 1000, 10000, 100000];
  * Uses the selected distance from the range slider
  */
 const generateRandomLocation = () => {
-  const currentLat = parseFloat(latInput.value) || DEFAULT_LAT;
-  const currentLng = parseFloat(lngInput.value) || DEFAULT_LNG;
+  const currentLat = parseFloat(latInput.value) || DEFAULT_LOCATION.latitude;
+  const currentLng = parseFloat(lngInput.value) || DEFAULT_LOCATION.longitude;
   
   const distanceIndex = parseInt(randomRange.value, 10);
   const distanceMeters = RANDOM_DISTANCES[distanceIndex] || 100;
