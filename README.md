@@ -6,7 +6,10 @@ GeoMask is a browser extension that allows users to spoof their geolocation data
 
 This extension **never asks for your real location**
 
-> [!WARNING] Some services use your IP address to determine location, this extension does not change that. It only spoofs the geolocation data provided by the browser's Geolocation API.
+> [!WARNING]
+> Some services use your IP address to determine location, this extension does not change that. It only spoofs the geolocation data provided by the browser's Geolocation API.
+
+<img width="420" height="545" alt="Screenshot 2025-12-14 at 21 47 21" src="https://github.com/user-attachments/assets/02eac33f-0548-46fd-a317-213dcbbdb6b3" />
 
 ### Features
 
@@ -14,6 +17,8 @@ This extension **never asks for your real location**
 - Randomize location within a specified distance
 - Search for locations by name using Nominatim
 - Interactive map to select location
+
+https://github.com/user-attachments/assets/394f3cb6-8c69-46eb-8f20-437c675e45e3
 
 ### Services used
 - [Nominatim](https://nominatim.org/) to search for locations by name and to convert coordinates into human-readable addresses (reverse geocoding).
