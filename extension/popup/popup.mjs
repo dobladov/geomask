@@ -291,7 +291,7 @@ const generateRandomLocation = () => {
   const currentLng = parseFloat(lngInput.value) || DEFAULT_LNG;
   
   const distanceIndex = parseInt(randomRange.value, 10);
-  const distanceMeters = RANDOM_DISTANCES[distanceIndex];
+  const distanceMeters = RANDOM_DISTANCES[distanceIndex] || 100;
   
   // Random angle in radians
   const angle = Math.random() * 2 * Math.PI;
