@@ -1,0 +1,25 @@
+{
+  "name": "geomask",
+  "version": "1.0.0",
+  "description": "Extension to change geolocation",
+  "license": "ISC",
+  "author": "",
+  "type": "module",
+  "main": "extension/manifest.json",
+  "scripts": {
+    "test": "tsc",
+    "watch": "tsc --watch",
+    "copy-leaflet": "mkdir -p extension/lib && cp ./node_modules/leaflet/dist/leaflet.js ./extension/lib/leaflet.js && cp ./node_modules/leaflet/dist/leaflet.css ./extension/lib/leaflet.css && cp -r ./node_modules/leaflet/dist/images ./extension/lib/images",
+    "postinstall": "npm run copy-leaflet",
+    "package": "mkdir -p dist && zip -r dist/geomask.zip extension/*"
+  },
+  "devDependencies": {
+    "@types/chrome": "^0.1.32",
+    "@types/firefox-webext-browser": "^143.0.0",
+    "@types/leaflet": "^1.9.21",
+    "typescript": "^5.9.3"
+  },
+  "dependencies": {
+    "leaflet": "1.9.4"
+  }
+}
