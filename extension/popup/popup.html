@@ -27,8 +27,17 @@
           <input type="tel" id="latInput" required placeholder="Latitude" title="Latitude">
           <input type="tel" id="lngInput" required placeholder="Longitude" title="Longitude">
         </div>
-        <div class="button-group">
-          <button id="randomBtn" class="action-btn">🎲 Randomize</button>
+        <div class="randomize-container">
+          <div class="range-wrapper">
+            <input type="range" id="randomRange" min="0" max="3" step="1" value="0">
+            <div class="range-labels">
+              <span>100m</span>
+              <span>1km</span>
+              <span>10km</span>
+              <span>100km</span>
+            </div>
+          </div>
+          <button id="randomBtn" class="action-btn">🎲</button>
         </div>
     </div>
   </div>

@@ -32,6 +32,7 @@ const toggleBtn = /** @type {HTMLButtonElement} */(document.getElementById('togg
 const latInput = /** @type {HTMLInputElement} */(document.getElementById('latInput'));
 const lngInput = /** @type {HTMLInputElement} */(document.getElementById('lngInput'));
 const randomBtn = /** @type {HTMLButtonElement} */(document.getElementById('randomBtn'));
+const randomRange = /** @type {HTMLInputElement} */(document.getElementById('randomRange'));
 const locationName = /** @type {HTMLDivElement} */(document.getElementById('locationName'));
 const toggleText = /** @type {HTMLSpanElement} */(toggleBtn.querySelector('.toggle-text'));
 
@@ -278,11 +279,33 @@ const searchLocation = async (query) => {
   }
 }
 
-/** Generate random location (avoiding oceans mostly) */
+/** Distance steps in meters: 100m, 1km, 10km 100km */
+const RANDOM_DISTANCES = [100, 1000, 10000, 100000];
+
+/** 
+ * Generate random location offset from current position
+ * Uses the selected distance from the range slider
+ */
 const generateRandomLocation = () => {
-  const lat = (Math.random() * 140) - 70; // -70 to 70
-  const lng = (Math.random() * 360) - 180; // -180 to 180
-  setLocation(lat, lng);
+  const currentLat = parseFloat(latInput.value) || DEFAULT_LAT;
+  const currentLng = parseFloat(lngInput.value) || DEFAULT_LNG;
+  
+  const distanceIndex = parseInt(randomRange.value, 10);
+  const distanceMeters = RANDOM_DISTANCES[distanceIndex];
+  
+  // Random angle in radians
+  const angle = Math.random() * 2 * Math.PI;
+  
+  // Convert distance to degrees (approximate)
+  // 1 degree latitude ≈ 111,320 meters
+  // 1 degree longitude ≈ 111,320 * cos(latitude) meters
+  const latOffset = (distanceMeters / 111320) * Math.cos(angle);
+  const lngOffset = (distanceMeters / (111320 * Math.cos(currentLat * Math.PI / 180))) * Math.sin(angle);
+  
+  const newLat = Math.max(-90, Math.min(90, currentLat + latOffset));
+  const newLng = ((currentLng + lngOffset + 540) % 360) - 180; // Wrap longitude
+  
+  setLocation(newLat, newLng);
 }
 
 /** Apply manually entered coordinates */ 
