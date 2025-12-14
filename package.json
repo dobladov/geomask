@@ -14,7 +14,7 @@
     "watch": "tsc --watch",
     "copy-leaflet": "mkdir -p extension/lib && cp ./node_modules/leaflet/dist/leaflet.js ./extension/lib/leaflet.js && cp ./node_modules/leaflet/dist/leaflet.css ./extension/lib/leaflet.css && cp -r ./node_modules/leaflet/dist/images ./extension/lib/images",
     "postinstall": "npm run copy-leaflet",
-    "package": "mkdir -p dist && zip -r dist/geomask.zip extension/*"
+    "package": "mkdir -p dist && cd extension && zip -r ../dist/geomask.zip ."
   },
   "devDependencies": {
     "@types/chrome": "^0.1.32",
