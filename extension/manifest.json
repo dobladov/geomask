@@ -38,5 +38,13 @@
       "resources": ["inject.js"],
       "matches": ["<all_urls>"]
     }
-  ]
+  ],
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "@geomask-doblado",
+      "data_collection_permissions": {
+        "required": ["none"]
+      }
+    }
+  }
 }
