@@ -12,7 +12,7 @@
   "scripts": {
     "test": "tsc",
     "watch": "tsc --watch",
-    "copy-leaflet": "mkdir -p extension/lib && cp ./node_modules/leaflet/dist/leaflet.js ./extension/lib/leaflet.js && cp ./node_modules/leaflet/dist/leaflet.css ./extension/lib/leaflet.css && cp -r ./node_modules/leaflet/dist/images ./extension/lib/images",
+    "copy-leaflet": "mkdir -p extension/lib && cp ./node_modules/leaflet/dist/leaflet.js ./extension/lib/leaflet.js && cp ./node_modules/leaflet/dist/leaflet.css ./extension/lib/leaflet.css",
     "postinstall": "npm run copy-leaflet",
     "package": "mkdir -p dist && cd extension && zip -r ../dist/geomask.zip ."
   },
