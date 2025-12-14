@@ -188,6 +188,14 @@ body {
   border-color: var(--color-accent);
 }
 
+.coords-container input.error {
+  border-color: var(--color-error);
+}
+
+.coords-container input.error:focus {
+  border-color: var(--color-error);
+}
+
 .coords-container input::placeholder {
   color: var(--color-text-disabled);
 }

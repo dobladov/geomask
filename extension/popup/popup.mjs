@@ -32,7 +32,6 @@ const toggleBtn = /** @type {HTMLButtonElement} */(document.getElementById('togg
 const latInput = /** @type {HTMLInputElement} */(document.getElementById('latInput'));
 const lngInput = /** @type {HTMLInputElement} */(document.getElementById('lngInput'));
 const randomBtn = /** @type {HTMLButtonElement} */(document.getElementById('randomBtn'));
-const applyBtn = /** @type {HTMLButtonElement} */(document.getElementById('applyBtn'));
 const locationName = /** @type {HTMLDivElement} */(document.getElementById('locationName'));
 const toggleText = /** @type {HTMLSpanElement} */(toggleBtn.querySelector('.toggle-text'));
 
@@ -42,6 +41,8 @@ let map;
 let marker;
 /** @type {ReturnType<typeof setTimeout> | undefined} */
 let searchTimeout;
+/** @type {ReturnType<typeof setTimeout> | undefined} */
+let coordInputTimeout;
 
 // Default location (Berlin)
 const DEFAULT_LAT = 52.509948;
@@ -289,22 +290,27 @@ const applyManualCoords = () => {
   const lat = parseFloat(latInput.value);
   const lng = parseFloat(lngInput.value);
 
-  if (isNaN(lat) || isNaN(lng)) {
-    alert('Please enter valid coordinates');
-    return;
-  }
+  // Validate latitude
+  const latValid = !isNaN(lat) && Math.abs(lat) <= 90;
+  latInput.classList.toggle('error', !latValid);
 
-  if (Math.abs(lat) > 90) {
-    alert('Latitude must be between -90 and 90');
-    return;
-  }
+  // Validate longitude
+  const lngValid = !isNaN(lng) && Math.abs(lng) <= 180;
+  lngInput.classList.toggle('error', !lngValid);
 
-  if (Math.abs(lng) > 180) {
-    alert('Longitude must be between -180 and 180');
+  if (!latValid || !lngValid) {
     return;
   }
 
   setLocation(lat, lng);
+}
+
+/** Debounced handler for coordinate input changes */
+const handleCoordInputChange = () => {
+  clearTimeout(coordInputTimeout);
+  coordInputTimeout = setTimeout(() => {
+    applyManualCoords();
+  }, 500);
 }
 
 // Setup event listeners
@@ -339,14 +345,9 @@ const setupEventListeners = () => {
 
   toggleBtn.addEventListener('click', toggleEnabled);
   randomBtn.addEventListener('click', generateRandomLocation);
-  applyBtn.addEventListener('click', applyManualCoords);
   
-  latInput.addEventListener('keypress', (e) => {
-    if (e.key === 'Enter') applyManualCoords();
-  });
-  lngInput.addEventListener('keypress', (e) => {
-    if (e.key === 'Enter') applyManualCoords();
-  });
+  latInput.addEventListener('input', handleCoordInputChange);
+  lngInput.addEventListener('input', handleCoordInputChange);
 }
 
 /**
