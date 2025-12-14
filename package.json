@@ -3,7 +3,10 @@
   "version": "1.0.0",
   "description": "Extension to change geolocation",
   "license": "MIT",
-  "author": "",
+  "author": "Daniel Doblado",
+  "repository": {
+    "url": "https://github.com/dobladov/geomask"
+  },
   "type": "module",
   "main": "extension/manifest.json",
   "scripts": {
