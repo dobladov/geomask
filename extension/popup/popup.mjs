@@ -1,8 +1,7 @@
-// import { DEFAULT_LOCATION } from '../constants.mjs';
-// console.log('DAN 🦆: DEFAULT_LOCATION', DEFAULT_LOCATION);
-
 const browserAPI = typeof browser !== 'undefined' ? browser : chrome;
 const nominatimBaseURL = 'https://nominatim.openstreetmap.org';
+
+import { DEFAULT_LOCATION } from '../constants.mjs';
 
 /**
  * Update extension badge
@@ -45,10 +44,6 @@ let searchTimeout;
 /** @type {ReturnType<typeof setTimeout> | undefined} */
 let coordInputTimeout;
 
-// Default location (Berlin)
-const DEFAULT_LAT = 52.509948;
-const DEFAULT_LNG = 13.404264;
-
 // Initialize
 document.addEventListener('DOMContentLoaded', async () => {
   await loadState();
@@ -60,8 +55,8 @@ document.addEventListener('DOMContentLoaded', async () => {
 const loadState = async () => {
   try {
     const result = await browserAPI.storage.local.get({
-      latitude: DEFAULT_LAT,
-      longitude: DEFAULT_LNG,
+      latitude: DEFAULT_LOCATION.latitude,
+      longitude: DEFAULT_LOCATION.longitude,
       enabled: true
     });
 
@@ -74,15 +69,15 @@ const loadState = async () => {
     reverseGeocode(result["latitude"], result["longitude"]);
   } catch (e) {
     console.error('Failed to load state:', e);
-    latInput.value = String(DEFAULT_LAT); 
-    lngInput.value = String(DEFAULT_LNG);
+    latInput.value = String(DEFAULT_LOCATION.latitude); 
+    lngInput.value = String(DEFAULT_LOCATION.longitude);
   }
 }
 
 // Initialize Leaflet map
 const initMap = () => {
-  const lat = parseFloat(latInput.value) || DEFAULT_LAT;
-  const lng = parseFloat(lngInput.value) || DEFAULT_LNG;
+  const lat = parseFloat(latInput.value) || DEFAULT_LOCATION.latitude;
+  const lng = parseFloat(lngInput.value) || DEFAULT_LOCATION.longitude;
 
   map = L.map('map', {
     zoomControl: true,

@@ -3,9 +3,9 @@
 const browserAPI = typeof browser !== 'undefined' ? browser : chrome;
 const root = document.documentElement;
 
-const DEFAULT_PREFS = {
-  latitude: 52.509948,
-  longitude: 13.404264,
+const DEFAULT_PREFS = { // Cannot import from constants.mjs in content script
+  latitude: 38.183755,
+  longitude: -3.685515,
   accuracy: 100,
   enabled: true
 };
