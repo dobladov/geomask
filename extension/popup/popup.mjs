@@ -3,6 +3,42 @@ const nominatimBaseURL = 'https://nominatim.openstreetmap.org';
 
 import { DEFAULT_LOCATION } from '../constants.mjs';
 
+// Rate limiter for Nominatim API (max 1 request per second)
+const NOMINATIM_MIN_INTERVAL = 1000;
+/** @type {number} */
+let lastNominatimRequest = 0;
+/** @type {Promise<void> | null} */
+let pendingRateLimitPromise = null;
+
+/**
+ * Rate-limited fetch for Nominatim API
+ * Ensures at least 1 second between requests
+ * @param {string} url
+ */
+const nominatimFetch = async (url) => {
+  // Wait for any pending rate limit
+  if (pendingRateLimitPromise) {
+    await pendingRateLimitPromise;
+  }
+
+  const now = Date.now();
+  const timeSinceLastRequest = now - lastNominatimRequest;
+  
+  if (timeSinceLastRequest < NOMINATIM_MIN_INTERVAL) {
+    const waitTime = NOMINATIM_MIN_INTERVAL - timeSinceLastRequest;
+    pendingRateLimitPromise = new Promise(resolve => setTimeout(resolve, waitTime));
+    await pendingRateLimitPromise;
+    pendingRateLimitPromise = null;
+  }
+
+  lastNominatimRequest = Date.now();
+  return fetch(url, {
+    headers: {
+      'Accept': 'application/json'
+    }
+  });
+};
+
 /**
  * Update extension badge
  * @param {boolean} enabled 
@@ -130,13 +166,8 @@ let reverseGeocodeTimeout;
  */
 const reverseGeocodeImpl = async (lat, lng) => {
   try {
-    const response = await fetch(
-      `${nominatimBaseURL}/reverse?format=json&lat=${lat}&lon=${lng}&zoom=14`,
-      {
-        headers: {
-          'Accept': 'application/json'
-        }
-      }
+    const response = await nominatimFetch(
+      `${nominatimBaseURL}/reverse?format=json&lat=${lat}&lon=${lng}&zoom=14`
     );
     
     /** @type {{ display_name?: string }} */
@@ -170,7 +201,7 @@ const reverseGeocode = (lat, lng) => {
   clearTimeout(reverseGeocodeTimeout);
   reverseGeocodeTimeout = setTimeout(() => {
     reverseGeocodeImpl(lat, lng);
-  }, 200);
+  }, 500);
 }
 
 /**
@@ -245,13 +276,8 @@ const searchLocation = async (query) => {
   }
 
   try {
-    const response = await fetch(
-      `${nominatimBaseURL}/search?format=json&q=${encodeURIComponent(query)}&limit=5`,
-      {
-        headers: {
-          'Accept': 'application/json'
-        }
-      }
+    const response = await nominatimFetch(
+      `${nominatimBaseURL}/search?format=json&q=${encodeURIComponent(query)}&limit=5`
     );
 
     /** @type {Array<{ lat: string, lon: string, display_name: string }>} */
@@ -338,7 +364,7 @@ const setupEventListeners = () => {
     const target = /** @type {HTMLInputElement | null} */ (e.target);
     searchTimeout = setTimeout(() => {
       searchLocation(target?.value ?? '');
-    }, 300);
+    }, 500);
   });
 
   searchResults.addEventListener('click', (e) => {    
