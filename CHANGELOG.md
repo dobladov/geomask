@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+- Rate limit Nominatim requests to 1 per second
+
 ### Infrastructure
 - Update GitHub Actions to use latest versions of actions
 
