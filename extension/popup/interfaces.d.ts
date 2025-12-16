@@ -4,6 +4,18 @@ export interface SearchItem extends HTMLElement {
         lng: string;
     }
 }
+export interface LocationName extends HTMLElement {
+    dataset: {
+        valid?: "true" | "false";
+    }
+}
+
+export interface SavedLocation {
+    latitude: number;
+    longitude: number;
+    name: string;
+}
+
 export interface SavedPreferences {
     latitude: number;
     longitude: number;
@@ -14,4 +26,6 @@ export interface SavedPreferences {
     locationName?: string;
     /** User selected distance for randomization */
     distanceIndex: number;
+    /** User saved locations */
+    savedLocations?: SavedLocation[];
 }

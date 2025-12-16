@@ -22,7 +22,11 @@
     <div id="map"></div>
 
     <div class="footer">
-      <div id="locationName" class="location-name">Select a location</div>
+      <div id="savedLocations" class="saved-locations"></div>
+      <div class="location-row">
+        <div id="locationName" data-valid="false" class="location-name">Select a location</div>
+        <button id="saveLocationBtn" class="save-btn" title="Save location">💾</button>
+      </div>
         <div class="coords-container">
           <input type="tel" id="latInput" required placeholder="Latitude" title="Latitude">
           <input type="tel" id="lngInput" required placeholder="Longitude" title="Longitude">

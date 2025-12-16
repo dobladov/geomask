@@ -68,7 +68,9 @@ const latInput = /** @type {HTMLInputElement} */(document.getElementById('latInp
 const lngInput = /** @type {HTMLInputElement} */(document.getElementById('lngInput'));
 const randomBtn = /** @type {HTMLButtonElement} */(document.getElementById('randomBtn'));
 const randomRange = /** @type {HTMLInputElement} */(document.getElementById('randomRange'));
-const locationName = /** @type {HTMLDivElement} */(document.getElementById('locationName'));
+const locationName = /** @type {LocationName} */(document.getElementById('locationName'));
+const savedLocations = /** @type {HTMLDivElement} */(document.getElementById('savedLocations'));
+const saveLocationBtn = /** @type {HTMLButtonElement} */(document.getElementById('saveLocationBtn'));
 const toggleText = /** @type {HTMLSpanElement} */(toggleBtn.querySelector('.toggle-text'));
 
 /** @type {L.Map} */
@@ -99,7 +101,8 @@ const loadState = async () => {
       enabled: true,
       zoom: 13,
       locationName: '',
-      distanceIndex: 0
+      distanceIndex: 0,
+      savedLocations: []
     }));
 
     savedZoom = result.zoom ?? 13;
@@ -109,6 +112,9 @@ const loadState = async () => {
     randomRange.value = String(result.distanceIndex);
     updateToggleButton(result.enabled);
     updateBadge(result.enabled);
+    
+    // Render saved locations
+    renderSavedLocations(result.savedLocations ?? []);
     
     // Use saved location name if available, otherwise fetch it
     if (result.locationName) {
@@ -183,6 +189,8 @@ let reverseGeocodeTimeout;
  * @param {number} lng 
  */
 const reverseGeocodeImpl = async (lat, lng) => {
+  locationName.dataset.valid = "false";
+
   try {
     const response = await nominatimFetch(
       `${nominatimBaseURL}/reverse?format=json&lat=${lat}&lon=${lng}&zoom=14`
@@ -196,6 +204,7 @@ const reverseGeocodeImpl = async (lat, lng) => {
       const parts = data.display_name.split(', ');
       const shortName = parts.slice(0, 3).join(', ');
       locationName.textContent = shortName;
+      locationName.dataset.valid = "true";
       saveLocationName(shortName);
     } else {
       throw new Error('No display_name in response');
@@ -229,8 +238,9 @@ const reverseGeocode = (lat, lng) => {
  * @param {number} lat 
  * @param {number} lng 
  * @param {boolean} [save] 
+ * @param {string} [name] - Optional location name to skip reverse geocoding
  */
-const setLocation = (lat, lng, save = true) => {
+const setLocation = (lat, lng, save = true, name) => {
   const latitude = parseFloat(lat.toFixed(6));
   const longitude = parseFloat(lng.toFixed(6));
 
@@ -240,8 +250,13 @@ const setLocation = (lat, lng, save = true) => {
   marker.setLatLng([latitude, longitude]);
   map.panTo([latitude, longitude]);
   
-  // Get location name via reverse geocoding
-  reverseGeocode(latitude, longitude);
+  // Use provided name or get location name via reverse geocoding
+  if (name) {
+    locationName.textContent = name;
+    saveLocationName(name);
+  } else {
+    reverseGeocode(latitude, longitude);
+  }
 
   if (save) {
     saveLocation(latitude, longitude);
@@ -295,6 +310,74 @@ const saveDistanceIndex = async (index) => {
   } catch (e) {
     console.error('Failed to save distance index:', e);
   }
+}
+
+/**
+ * Save current location to saved locations list
+ */
+const saveCurrentLocation = async () => {
+  try {
+    const lat = parseFloat(latInput.value);
+    const lng = parseFloat(lngInput.value);
+    
+    if (isNaN(lat) || isNaN(lng)) return;
+    
+    // Use location name if available, otherwise use coordinates
+    const currentName = locationName.textContent || '';
+    const isValidName = locationName.dataset.valid === "true";
+    const name = isValidName ? currentName : `${lat.toFixed(4)}, ${lng.toFixed(4)}`;
+    
+    const result = /** @type {SavedPreferences} */(await browserAPI.storage.local.get({ savedLocations: [] }));
+    /** @type {SavedLocation[]} */
+    const locations = result.savedLocations ?? [];
+    
+    // Check if this location already exists (within 0.0001 degrees)
+    const exists = locations.some(
+      item => Math.abs(item.latitude - lat) < 0.0001 && Math.abs(item.longitude - lng) < 0.0001
+    );
+    
+    if (exists) return; // Don't add duplicates
+    
+    // Add new location
+    locations.push({ latitude: lat, longitude: lng, name });
+    
+    await browserAPI.storage.local.set({ savedLocations: locations });
+    renderSavedLocations(locations);
+  } catch (e) {
+    console.error('Failed to save location:', e);
+  }
+}
+
+/**
+ * Remove a saved location by index
+ * @param {number} index 
+ */
+const removeSavedLocation = async (index) => {
+  try {
+    const result = /** @type {SavedPreferences} */(await browserAPI.storage.local.get({ savedLocations: [] }));
+    /** @type {SavedLocation[]} */
+    const locations = result.savedLocations ?? [];
+    
+    locations.splice(index, 1);
+    
+    await browserAPI.storage.local.set({ savedLocations: locations });
+    renderSavedLocations(locations);
+  } catch (e) {
+    console.error('Failed to remove saved location:', e);
+  }
+}
+
+/**
+ * Render saved locations buttons
+ * @param {SavedLocation[]} locations 
+ */
+const renderSavedLocations = (locations) => {
+  savedLocations.innerHTML = locations.map((item, index) => `
+    <button class="saved-item" data-index="${index}" data-lat="${item.latitude}" data-lng="${item.longitude}" title="${item.name}">
+      <span class="saved-item-name">${item.name}</span>
+      <span class="saved-item-delete" data-delete="${index}">×</span>
+    </button>
+  `).join('');
 }
 
 /** Toggle enabled state */
@@ -452,8 +535,35 @@ const setupEventListeners = () => {
   randomRange.addEventListener('input', () => {
     saveDistanceIndex(parseInt(randomRange.value, 10));
   });
+  
+  // Save location button
+  saveLocationBtn.addEventListener('click', saveCurrentLocation);
+  
+  // Saved locations click handler
+  savedLocations.addEventListener('click', (e) => {
+    const target = /** @type {HTMLElement} */(e.target);
+    
+    // Check if delete button was clicked
+    if (target.classList.contains('saved-item-delete')) {
+      const deleteIndex = target.dataset['delete'];
+      if (deleteIndex !== undefined) {
+        e.stopPropagation();
+        removeSavedLocation(parseInt(deleteIndex, 10));
+      }
+      return;
+    }
+    
+    // Otherwise, select the location
+    const item = /** @type {HTMLElement | null} */(target.closest('.saved-item'));
+    if (item && item.dataset['lat'] && item.dataset['lng']) {
+      const lat = parseFloat(item.dataset['lat']);
+      const lng = parseFloat(item.dataset['lng']);
+      const name = item.getAttribute('title') || undefined;
+      setLocation(lat, lng, true, name);
+    }
+  });
 }
 
 /**
- * @import { SearchItem, SavedPreferences } from './interfaces.d.ts';
+ * @import { SearchItem, SavedPreferences, SavedLocation, LocationName } from './interfaces.d.ts';
  */
