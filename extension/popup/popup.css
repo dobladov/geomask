@@ -205,19 +205,21 @@ body {
 
 .saved-item-delete {
   position: absolute;
+  top: 50%;
   right: 0.2rem;
+  transform: translateY(-50%);
   display: none;
   align-items: center;
   justify-content: center;
   width: 1rem;
   height: 1rem;
   font-size: 0.65rem;
+  line-height: 1;
   background: var(--color-error);
   color: var(--color-white);
   border: none;
   border-radius: 50%;
   cursor: pointer;
-  line-height: 1;
 }
 
 .saved-item:hover .saved-item-delete {
