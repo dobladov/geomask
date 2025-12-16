@@ -198,13 +198,12 @@ const reverseGeocodeImpl = async (lat, lng) => {
       locationName.textContent = shortName;
       saveLocationName(shortName);
     } else {
-      const coordsName = `${lat.toFixed(4)}, ${lng.toFixed(4)}`;
-      locationName.textContent = coordsName;
-      saveLocationName(coordsName);
+      throw new Error('No display_name in response');
     }
   } catch (e) {
     console.error('Reverse geocode failed:', e);
-    locationName.textContent = `${lat.toFixed(4)}, ${lng.toFixed(4)}`;
+    locationName.textContent = `No name found for this location`;
+    saveLocationName(locationName.textContent);
   } finally {
     locationName.classList.remove('loading');
   }
