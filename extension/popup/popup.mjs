@@ -247,7 +247,7 @@ const setLocation = (lat, lng, name) => {
   lngInput.value = String(longitude);
 
   marker.setLatLng([latitude, longitude]);
-  map.panTo([latitude, longitude]);
+  map.flyTo([latitude, longitude]);
   
   // Use provided name or get location name via reverse geocoding
   if (name) {
@@ -511,7 +511,6 @@ const setupEventListeners = () => {
       setLocation(lat, lng, item.textContent || '');
       searchInput.value = '';
       searchResults.classList.remove('active');
-      map.setZoom(13);
     }
   });
 
