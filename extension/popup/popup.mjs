@@ -247,7 +247,7 @@ const setLocation = (lat, lng, name) => {
   lngInput.value = String(longitude);
 
   marker.setLatLng([latitude, longitude]);
-  map.flyTo([latitude, longitude]);
+  map.flyTo([latitude, longitude], map.getZoom(), { animate: true, duration: 0.7 });
   
   // Use provided name or get location name via reverse geocoding
   if (name) {
