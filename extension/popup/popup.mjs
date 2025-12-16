@@ -80,6 +80,9 @@ let searchTimeout;
 /** @type {ReturnType<typeof setTimeout> | undefined} */
 let coordInputTimeout;
 
+/** @type {SavedPreferences["zoom"]} */
+let savedZoom = 13;
+
 // Initialize
 document.addEventListener('DOMContentLoaded', async () => {
   await loadState();
@@ -90,19 +93,29 @@ document.addEventListener('DOMContentLoaded', async () => {
 // Load saved state from storage
 const loadState = async () => {
   try {
-    const result = await browserAPI.storage.local.get({
+    const result = /** @type {SavedPreferences} */(await browserAPI.storage.local.get({
       latitude: DEFAULT_LOCATION.latitude,
       longitude: DEFAULT_LOCATION.longitude,
-      enabled: true
-    });
+      enabled: true,
+      zoom: 13,
+      locationName: '',
+      distanceIndex: 0
+    }));
 
-    latInput.value = result["latitude"];
-    lngInput.value = result["longitude"];
-    updateToggleButton(result["enabled"]);
-    updateBadge(result["enabled"]);
+    savedZoom = result.zoom ?? 13;
+
+    latInput.value = String(result.latitude);
+    lngInput.value = String(result.longitude);
+    randomRange.value = String(result.distanceIndex);
+    updateToggleButton(result.enabled);
+    updateBadge(result.enabled);
     
-    // Fetch location name for saved coordinates
-    reverseGeocode(result["latitude"], result["longitude"]);
+    // Use saved location name if available, otherwise fetch it
+    if (result.locationName) {
+      locationName.textContent = result.locationName;
+    } else {
+      reverseGeocode(result.latitude, result.longitude);
+    }
   } catch (e) {
     console.error('Failed to load state:', e);
     latInput.value = String(DEFAULT_LOCATION.latitude); 
@@ -117,7 +130,7 @@ const initMap = () => {
 
   map = L.map('map', {
     zoomControl: true,
-  }).setView([lat, lng], 13);
+  }).setView([lat, lng], savedZoom);
 
   // Add themed class for custom styling
   map.getContainer().classList.add('themed-map');
@@ -154,6 +167,11 @@ const initMap = () => {
     const pos = marker.getLatLng();
     setLocation(pos.lat, pos.lng);
   });
+
+  // Save zoom level when changed
+  map.on('zoomend', () => {
+    saveZoom(map.getZoom());
+  });
 }
 
 // Reverse geocode to get location name (debounced)
@@ -178,8 +196,11 @@ const reverseGeocodeImpl = async (lat, lng) => {
       const parts = data.display_name.split(', ');
       const shortName = parts.slice(0, 3).join(', ');
       locationName.textContent = shortName;
+      saveLocationName(shortName);
     } else {
-      locationName.textContent = `${lat.toFixed(4)}, ${lng.toFixed(4)}`;
+      const coordsName = `${lat.toFixed(4)}, ${lng.toFixed(4)}`;
+      locationName.textContent = coordsName;
+      saveLocationName(coordsName);
     }
   } catch (e) {
     console.error('Reverse geocode failed:', e);
@@ -238,6 +259,42 @@ const saveLocation = async (lat, lng) => {
     await browserAPI.storage.local.set({ latitude: lat, longitude: lng });
   } catch (e) {
     console.error('Failed to save location:', e);
+  }
+}
+
+/**
+ * Save zoom level to storage
+ * @param {number} zoom 
+ */
+const saveZoom = async (zoom) => {
+  try {
+    await browserAPI.storage.local.set({ zoom });
+  } catch (e) {
+    console.error('Failed to save zoom:', e);
+  }
+}
+
+/**
+ * Save location name to storage
+ * @param {string} name 
+ */
+const saveLocationName = async (name) => {
+  try {
+    await browserAPI.storage.local.set({ locationName: name });
+  } catch (e) {
+    console.error('Failed to save location name:', e);
+  }
+}
+
+/**
+ * Save distance index to storage
+ * @param {number} index 
+ */
+const saveDistanceIndex = async (index) => {
+  try {
+    await browserAPI.storage.local.set({ distanceIndex: index });
+  } catch (e) {
+    console.error('Failed to save distance index:', e);
   }
 }
 
@@ -392,8 +449,12 @@ const setupEventListeners = () => {
   
   latInput.addEventListener('input', handleCoordInputChange);
   lngInput.addEventListener('input', handleCoordInputChange);
+  
+  randomRange.addEventListener('input', () => {
+    saveDistanceIndex(parseInt(randomRange.value, 10));
+  });
 }
 
 /**
- * @import { SearchItem } from './interfaces.d.ts';
+ * @import { SearchItem, SavedPreferences } from './interfaces.d.ts';
  */

@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 - Rate limit Nominatim requests to 1 per second
+- Save and load zoom level, location name, and distance index in popup
 
 ### Infrastructure
 - Update GitHub Actions to use latest versions of actions
