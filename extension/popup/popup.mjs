@@ -237,10 +237,9 @@ const reverseGeocode = (lat, lng) => {
  * Set location and update UI
  * @param {number} lat 
  * @param {number} lng 
- * @param {boolean} [save] 
  * @param {string} [name] - Optional location name to skip reverse geocoding
  */
-const setLocation = (lat, lng, save = true, name) => {
+const setLocation = (lat, lng, name) => {
   const latitude = parseFloat(lat.toFixed(6));
   const longitude = parseFloat(lng.toFixed(6));
 
@@ -258,9 +257,7 @@ const setLocation = (lat, lng, save = true, name) => {
     reverseGeocode(latitude, longitude);
   }
 
-  if (save) {
-    saveLocation(latitude, longitude);
-  }
+  saveLocation(latitude, longitude);
 }
 
 /**
@@ -511,7 +508,7 @@ const setupEventListeners = () => {
     if (item && item.dataset.lat) {
       const lat = parseFloat(item.dataset.lat);
       const lng = parseFloat(item.dataset.lng);
-      setLocation(lat, lng);
+      setLocation(lat, lng, item.textContent || '');
       searchInput.value = '';
       searchResults.classList.remove('active');
       map.setZoom(13);
@@ -559,7 +556,7 @@ const setupEventListeners = () => {
       const lat = parseFloat(item.dataset['lat']);
       const lng = parseFloat(item.dataset['lng']);
       const name = item.getAttribute('title') || undefined;
-      setLocation(lat, lng, true, name);
+      setLocation(lat, lng, name);
     }
   });
 }
