@@ -29,5 +29,5 @@
     "moduleDetection": "force",
     "skipLibCheck": true,
   },
-  "exclude": ["extension/lib"]
+  "exclude": ["extension/lib", "dist"]
 }
