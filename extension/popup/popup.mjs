@@ -119,6 +119,7 @@ const loadState = async () => {
     // Use saved location name if available, otherwise fetch it
     if (result.locationName) {
       locationName.textContent = result.locationName;
+      locationName.dataset.valid = "true";
     } else {
       reverseGeocode(result.latitude, result.longitude);
     }
@@ -212,6 +213,7 @@ const reverseGeocodeImpl = async (lat, lng) => {
   } catch (e) {
     console.error('Reverse geocode failed:', e);
     locationName.textContent = `No name found for this location`;
+    locationName.dataset.valid = "false";
     saveLocationName(locationName.textContent);
   } finally {
     locationName.classList.remove('loading');
@@ -252,6 +254,7 @@ const setLocation = (lat, lng, name) => {
   // Use provided name or get location name via reverse geocoding
   if (name) {
     locationName.textContent = name;
+    locationName.dataset.valid = "true";
     saveLocationName(name);
   } else {
     reverseGeocode(latitude, longitude);
