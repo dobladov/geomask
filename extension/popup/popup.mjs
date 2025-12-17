@@ -213,7 +213,6 @@ const reverseGeocodeImpl = async (lat, lng) => {
   } catch (e) {
     console.error('Reverse geocode failed:', e);
     locationName.textContent = `No name found for this location`;
-    locationName.dataset.valid = "false";
     saveLocationName(locationName.textContent);
   } finally {
     locationName.classList.remove('loading');
