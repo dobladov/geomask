@@ -20,6 +20,7 @@ This extension **never asks for your real location**
 - Randomize location within a specified distance
 - Search for locations by name using Nominatim
 - Interactive map to select location
+- Save prefered locations
 
 https://github.com/user-attachments/assets/394f3cb6-8c69-46eb-8f20-437c675e45e3
 
