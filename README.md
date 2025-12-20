@@ -1,3 +1,6 @@
+[![Firefox](https://img.shields.io/amo/v/geomask.svg?label=Firefox)](https://addons.mozilla.org/en-US/firefox/addon/geomask/)
+[![Chrome](https://img.shields.io/chrome-web-store/v/onmhohhfidpbfmgkplobnjlfnfnopehm.svg?color=%234A88EE&label=Chrome)]([https://chrome.google.com/webstore/detail/youtube2anki/boebbbjmbikafafhoelhdjeocceddngi](https://chromewebstore.google.com/detail/geomask-change-your-locat/onmhohhfidpbfmgkplobnjlfnfnopehm))
+
 ## GeoMask
 
 ### About
@@ -9,7 +12,7 @@ This extension **never asks for your real location**
 > [!WARNING]
 > Some services use your IP address to determine location, this extension does not change that. It only spoofs the geolocation data provided by the browser's Geolocation API.
 
-<img width="420" height="545" alt="Screenshot 2025-12-14 at 21 47 21" src="https://github.com/user-attachments/assets/02eac33f-0548-46fd-a317-213dcbbdb6b3" />
+<img width="409" height="584" alt="Screenshot 2025-12-16 at 17 02 31" src="https://github.com/user-attachments/assets/23677946-ecc9-4d73-975d-86d3ba57e0e6" />
 
 ### Features
 
