@@ -1,5 +1,5 @@
 [![Firefox](https://img.shields.io/amo/v/geomask.svg?label=Firefox)](https://addons.mozilla.org/en-US/firefox/addon/geomask/)
-[![Chrome](https://img.shields.io/chrome-web-store/v/onmhohhfidpbfmgkplobnjlfnfnopehm.svg?color=%234A88EE&label=Chrome)]([https://chrome.google.com/webstore/detail/youtube2anki/boebbbjmbikafafhoelhdjeocceddngi](https://chromewebstore.google.com/detail/geomask-change-your-locat/onmhohhfidpbfmgkplobnjlfnfnopehm))
+[![Chrome](https://img.shields.io/chrome-web-store/v/onmhohhfidpbfmgkplobnjlfnfnopehm.svg?color=%234A88EE&label=Chrome)](https://chromewebstore.google.com/detail/geomask-change-your-locat/onmhohhfidpbfmgkplobnjlfnfnopehm)
 
 ## GeoMask
 
