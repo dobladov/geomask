@@ -11,6 +11,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 - Small fix for location save on search
 
+## [1.2.0] - 2025-12-29
+
+- Changed temp logo with a new one
+
 ## [1.1.0] - 2025-12-16
 
 ### Added
